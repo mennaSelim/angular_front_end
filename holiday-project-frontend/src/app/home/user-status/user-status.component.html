@@ -1,0 +1,85 @@
+<app-logout ></app-logout>
+
+<br>
+<div class="container" *ngIf = "!loadingStatus && !loadingBalance">
+
+<!-- <div class="row">
+  <div class="col-sm-3"> -->
+      <div class="card-deck">
+
+        <div class="card bg-light mb-3">
+            <div class="card-header">Planned</div>
+            <div class="card-body">
+                <!-- <h5 class="card-title">Planned</h5> -->
+                <p class="card-text">{{planned}}</p>
+            </div>
+        </div>
+
+        <!-- <div class="col-sm-3"> -->
+        <div class="card text-white bg-secondary mb-3">
+            <div class="card-header">Casual</div>
+            <div class="card-body">
+                <!-- <h5 class="card-title">Casual</h5> -->
+                <p class="card-text">{{casual}}</p>
+            </div>
+        </div>
+        <!-- </div> -->
+    </div>
+    <br>   
+    <div>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">type</th>
+                    <th scope="col">amount</th>
+                    <th scope="col">status</th>
+                    <th scope="col">from date</th>
+                    <th scope="col">to date</th>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody *ngIf="data">
+                <tr *ngFor="let data of data['data']; index as i">
+                    <th scope="row">{{ i + 1 }}</th>
+                    <td>{{data.type}}</td>
+                    <td>{{data.amount}}</td>
+                    <td>{{data.status}}</td>
+                    <td>{{data.from}}</td>
+                    <td>{{data.to}}</td>
+                    <td> <button name={{data.id}} type="button" class="btn btn-link" (click)="onUpdate(i,data.id)">edit</button></td>
+                    <td> <button name={{data.id}} type="button" class="btn btn-link" (click)="onDelete(i,data.id)" >delete</button></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<!--&lt;!&ndash; Button trigger modal &ndash;&gt;-->
+<!--<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">-->
+    <!--Launch demo modal-->
+<!--</button>-->
+
+<!--&lt;!&ndash; Modal &ndash;&gt;-->
+<!--<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">-->
+    <!--<div class="modal-dialog modal-dialog-centered" role="document">-->
+        <!--<div class="modal-content">-->
+            <!--<div class="modal-header">-->
+                <!--<h5 class="modal-title" id="exampleModalCenterTitle">Modal title</h5>-->
+                <!--<button type="button" class="close" data-dismiss="modal" aria-label="Close">-->
+                    <!--<span aria-hidden="true">&times;</span>-->
+                <!--</button>-->
+            <!--</div>-->
+            <!--<div class="modal-body">-->
+                <!--...-->
+            <!--</div>-->
+            <!--<div class="modal-footer">-->
+                <!--<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>-->
+                <!--<button type="button" class="btn btn-primary">Save changes</button>-->
+            <!--</div>-->
+        <!--</div>-->
+    <!--</div>-->
+<!--</div>-->
+

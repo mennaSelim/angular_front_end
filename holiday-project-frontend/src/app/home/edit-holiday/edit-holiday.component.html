@@ -1,0 +1,41 @@
+<app-logout ></app-logout>
+
+
+<div class="container" *ngIf="!isLoading">
+  <div class = "card">
+    <div class="card-header">Holiday Request form</div>
+    <div class  = "card-body">
+
+
+      <form #f="ngForm" (ngSubmit)="onSelect(f)">
+
+        <div class="form-group">
+          <label for="holidayType">holiday type</label>
+          <!-- <input id="holidayType" name="holidayType" type="text" class="form-control" ngModel #holidayType="ngModel" required [ngClass]="{ 'is-invalid': formErrors.type }"> -->
+          <select class="form-control"  id="holidayType" name="holidayType" ngModel #holidayType="ngModel" required [ngClass]="{ 'is-invalid': formErrors.type }">
+            <option *ngFor="let holiday of holidays" [value]="holiday">{{holiday}}</option>
+          </select>
+          <small *ngIf="formErrors.type" class="invalid-feedback">{{formErrors.type}}</small>
+        </div>
+        <div class="form-group">
+          <label for="fromDate">from date</label>
+          <input name="fromDate" [(ngModel)]="holiday.from" type="date" class="form-control" ngModel id="fromDate" #fromDate="ngModel" required [ngClass]="{ 'is-invalid': formErrors.from }">
+          <small *ngIf="formErrors.from" class="invalid-feedback">{{formErrors.from}}</small>
+        </div>
+        <div class="form-group">
+          <label for="toDate">to date</label>
+          <input name="toDate" [(ngModel)]="holiday.to" type="date" class="form-control" ngModel id="toDate" #toDate="ngModel" required [ngClass]="{ 'is-invalid': formErrors.to }">
+          <small *ngIf="formErrors.to" class="invalid-feedback">{{formErrors.to}}</small>
+        </div>
+        <div class="form-group">
+          <label for="amount">amount</label>
+          <input name="amount" [(ngModel)]="holiday.amount" type="number" class="form-control" ngModel id="amount" #amount="ngModel" required [ngClass]="{ 'is-invalid': formErrors.amount }">
+          <small *ngIf="formErrors.amount" class="invalid-feedback">{{formErrors.amount}}</small>
+        </div>
+        <button type="submit" class="btn btn-success">Create Request</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!--<ngb-pagination [collectionSize]="70" [(page)]="1" aria-label="Default pagination"></ngb-pagination>-->

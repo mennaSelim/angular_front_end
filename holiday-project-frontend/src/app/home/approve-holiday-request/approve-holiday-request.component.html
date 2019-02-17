@@ -1,0 +1,56 @@
+<app-logout ></app-logout>
+
+
+
+<table class="table table-striped" *ngIf="this.requests ">
+    <thead>
+    <tr>
+        <th scope="col">#</th>
+        <th scope="col">name</th>
+        <th scope="col">type</th>
+        <th scope="col">amount</th>
+        <th scope="col">status</th>
+        <th scope="col">from date</th>
+        <th scope="col">to date</th>
+        <th scope="col">approve</th>
+        <th scope="col">reject</th>
+        <th scope="col">submit</th>
+    </tr>
+    </thead>
+
+    <tbody *ngFor="let data of this.requests; index as i">
+
+    <tr *ngFor="let req of data['requests'];index as j">
+        <th scope="row">{{ i + 1 }}</th>
+        <td>{{ data['name'] }}</td>
+        <td>{{req.type}}</td>
+        <td>{{req.amount}}</td>
+        <td>{{req.status}}</td>
+        <td>{{req.from}}</td>
+        <td>{{req.to}}</td>
+        <td>
+            <input type="radio" name={{req.id}} [(ngModel)]="this.requests[i].requests[j].newStatus" value="approve"/>
+        </td>
+        <td>
+            <input type="radio" name={{req.id}} [(ngModel)]="this.requests[i].requests[j].newStatus" value="reject"/>
+        </td>
+        <td>
+            <button class="btn btn-primary" type="submit" (click)="onSubmitBtn(i, j,req.id)" name={{req.id}}>submit
+            </button>
+        </td>
+    </tr>
+    <tr *ngIf="this.requests.length -1 > i" style="background-color: dimgray">
+        <td colspan="10"></td>
+    </tr>
+    <tr *ngIf="this.requests.length -1 > i">
+        <td style="height:0px" colspan="10"></td>
+    </tr>
+    </tbody>
+</table>
+
+
+
+<div *ngIf="(!isAuthorized) || (!requests)">
+    You do not have requests to approve
+
+</div>
