@@ -1,14 +1,13 @@
 import {Component, OnInit} from '@angular/core';
 import {Holiday} from '../../_models/holiday';
 import {ServerData} from '../../_models/server-data';
-import {ServerService} from '../../_services/server.service';
 import {ActivatedRoute, ParamMap, Router} from '@angular/router';
-import {AlertService} from '../../_services/alert.service';
+import {Alert} from '../../_helpers/alert';
 import {NgForm} from '@angular/forms';
 import {first, switchMap} from 'rxjs/operators';
 import {HolidayService} from '../../_services/holiday.service';
+import {HolidayConstant} from '../../constants/holiday-constant';
 
-const UPDATE_HOLIDAY_URL = '';
 
 @Component({
     selector: 'app-edit-holiday',
@@ -18,31 +17,35 @@ const UPDATE_HOLIDAY_URL = '';
 export class EditHolidayComponent implements OnInit {
 
     private holiday: Holiday;
-    private holidayId;
+    private holidayIndex;
     private response: ServerData;
     private formErrors = {};
-    private holidays = ['planned', 'casual'];
-    private isLoading ;
+    // private holidays = ['planned', 'casual'];
+    private isLoading;
+    private holidays = [HolidayConstant.PLANNED, HolidayConstant.CASUAL];
+    private holidayMap = new Map();
 
-    constructor(private serverService: ServerService, private router: Router
-        , private alertService: AlertService, private holidayService: HolidayService,
-                private route: ActivatedRoute
-
-                ) {
+    constructor(private router: Router
+        , private alertService: Alert, private holidayService: HolidayService,
+                private route: ActivatedRoute) {
+        this.holidayMap = new Map();
+        this.holidayMap.set(HolidayConstant.PLANNED, 'planned');
+        this.holidayMap.set(HolidayConstant.CASUAL, 'casual');
     }
 
     ngOnInit() {
         this.isLoading = true;
         this.holiday = new Holiday();
-        this.holidayId = this.route.snapshot.paramMap.get('id');
-        this.holiday = this.holidayService.holidays[this.holidayId];
+        this.holidayIndex = this.route.snapshot.paramMap.get('index');
+        this.holiday = this.holidayService.holidays[this.holidayIndex];
+        console.log('holiday in edit');
+        console.log(this.holiday);
         this.isLoading = false;
 
     }
 
 
     onSelect(f: NgForm): void {
-        this.holiday = new Holiday();
         this.formErrors = {};
         this.holiday.type = f.value['holidayType'];
         this.holiday.from = f.value['fromDate'];
@@ -54,7 +57,8 @@ export class EditHolidayComponent implements OnInit {
     }
 
     getServerUpdateHolidayResponse() {
-        this.serverService.postServerRequest(this.holiday, UPDATE_HOLIDAY_URL).pipe(first())
+        // this.serverService.postServerRequest(this.holiday, UPDATE_HOLIDAY_URL).pipe(first())
+        this.holidayService.updateHoliday(this.holiday, this.holiday.id).pipe(first())
             .subscribe((data: ServerData) => {
                     console.log((this.response = data));
                     this.router.navigate(['user-home']);

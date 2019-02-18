@@ -15,7 +15,7 @@ export class AuthGuard implements CanActivate {
         console.log('un authenticated from auth guard');
         // not logged in so redirect to login page with the return url
         // url tree : current navigation cancelled & new navigation created
-        this.router.navigate(['/login-new'], { queryParams: { returnUrl: state.url }});
+        this.router.navigate(['/login'], { queryParams: { returnUrl: state.url }});
         return false;
     }
 }

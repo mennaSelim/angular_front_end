@@ -1,5 +1,4 @@
-<app-logout ></app-logout>
-
+<app-logout></app-logout>
 
 
 <table class="table table-striped" *ngIf="this.requests ">
@@ -23,16 +22,17 @@
     <tr *ngFor="let req of data['requests'];index as j">
         <th scope="row">{{ i + 1 }}</th>
         <td>{{ data['name'] }}</td>
-        <td>{{req.type}}</td>
+        <td>{{holidayTypeMap.get(req.type)}}</td>
         <td>{{req.amount}}</td>
-        <td>{{req.status}}</td>
+        <td>{{holidayStatusMap.get(req.status)}}</td>
         <td>{{req.from}}</td>
         <td>{{req.to}}</td>
         <td>
-            <input type="radio" name={{req.id}} [(ngModel)]="this.requests[i].requests[j].newStatus" value="approve"/>
+            <input type="radio" name={{req.id}} [(ngModel)]="this.requests[i].requests[j].newStatus"
+                   value="1"/>
         </td>
         <td>
-            <input type="radio" name={{req.id}} [(ngModel)]="this.requests[i].requests[j].newStatus" value="reject"/>
+            <input type="radio" name={{req.id}} [(ngModel)]="this.requests[i].requests[j].newStatus" value="2"/>
         </td>
         <td>
             <button class="btn btn-primary" type="submit" (click)="onSubmitBtn(i, j,req.id)" name={{req.id}}>submit
@@ -47,7 +47,6 @@
     </tr>
     </tbody>
 </table>
-
 
 
 <div *ngIf="(!isAuthorized) || (!requests)">

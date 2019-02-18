@@ -3,7 +3,6 @@ import {NgModule} from '@angular/core';
 
 import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
-import {LoginComponent} from './login/login.component';
 
 import {FormsModule, ReactiveFormsModule} from '@angular/forms'; // <-- NgModel lives here
 import {HttpClientModule, HTTP_INTERCEPTORS} from '@angular/common/http';
@@ -17,10 +16,8 @@ import { MainComponent } from './main/main.component';
 import { LogoutComponent } from './logout/logout.component';
 import {AuthGuard} from './guards/auth.guard';
 import {AuthenticationService} from './_services/authentication.service';
-import {ServerService} from './_services/server.service';
 import { AlertComponent } from './Extra/alert/alert.component';
-import {AlertService} from './_services/alert.service';
-import { LoginNewComponent } from './login-new/login-new.component';
+import { LoginComponent } from './login/login.component';
 import { ServerDownComponent } from './Extra/server-down/server-down.component';
 import { NotFoundComponent } from './Extra/not-found/not-found.component';
 import { EditHolidayComponent } from './home/edit-holiday/edit-holiday.component';
@@ -29,7 +26,6 @@ import {HolidayService} from './_services/holiday.service';
 @NgModule({
     declarations: [
         AppComponent,
-        LoginComponent,
         UserHomeComponent,
         UserStatusComponent,
         HolidayRequestComponent,
@@ -37,7 +33,7 @@ import {HolidayService} from './_services/holiday.service';
         MainComponent,
         LogoutComponent,
         AlertComponent,
-        LoginNewComponent,
+        LoginComponent,
         ServerDownComponent,
         NotFoundComponent,
         EditHolidayComponent
@@ -54,8 +50,6 @@ import {HolidayService} from './_services/holiday.service';
         {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},
         AuthGuard,
         AuthenticationService,
-        ServerService,
-        AlertService,
         HolidayService,
     ],
     bootstrap: [AppComponent]

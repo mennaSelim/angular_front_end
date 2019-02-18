@@ -1,6 +1,6 @@
 export class Holiday {
     id : number;
-    type: string;
+    type: number;
     from: Date;
     to: Date;
     amount: number;

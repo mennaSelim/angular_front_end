@@ -1,11 +1,10 @@
 import {Component, OnInit} from '@angular/core';
-import {ServerService} from '../../_services/server.service';
 import {Router} from '@angular/router';
-import {ApiUrl} from '../../constants/api-url';
 import {ServerData} from '../../_models/server-data';
-import {AlertService} from '../../_services/alert.service';
-import {Holiday} from '../../_models/holiday';
+import {Alert} from '../../_helpers/alert';
 import {HolidayService} from '../../_services/holiday.service';
+import {UserService} from '../../_services/user.service';
+import {HolidayConstant} from '../../constants/holiday-constant';
 
 
 @Component({
@@ -19,12 +18,24 @@ export class UserStatusComponent implements OnInit {
     private casual;
     private loadingHolidayStatus = true;
     private loadingHolidayBalance = true;
-    private currentHoliday: Holiday;
+    private response: ServerData;
+    private pendingStatus = HolidayConstant.PENDING_STATUS;
+    private holidayStatusMap;
+    private holidayTypeMap;
 
-    constructor(private serverService: ServerService, private router: Router,
-                private alertService: AlertService, private holidayService: HolidayService) {
-        // this.data = serverService.response.data;
-        // this.getServerUserStatusResponse();
+    constructor(private router: Router,
+                private alert: Alert,
+                private holidayService: HolidayService,
+                private userService: UserService) {
+        this.holidayStatusMap = new Map();
+        this.holidayStatusMap.set(HolidayConstant.PENDING_STATUS, 'pending');
+        this.holidayStatusMap.set(HolidayConstant.APPROVE_STATUS, 'approved');
+        this.holidayStatusMap.set(HolidayConstant.REJECT_STATUS, 'rejected');
+
+        this.holidayTypeMap = new Map();
+        this.holidayTypeMap.set(HolidayConstant.PLANNED, 'planned');
+        this.holidayTypeMap.set(HolidayConstant.CASUAL, 'casual');
+
     }
 
     ngOnInit() {
@@ -34,23 +45,21 @@ export class UserStatusComponent implements OnInit {
     }
 
     getServerUserStatusResponse() {
-        // this.serverService.getServerResponse(ApiUrl.STATUS_URL)
         this.holidayService.getHolidays()
         // clone the data object, using its known Config shape
             .subscribe((data: ServerData) => {
-                console.log(this.serverService.response = data);
-                this.holidayService.holidays = data.data['data'];
-                console.log('data.data');
-                console.log(this.holidayService.holidays);
+                    console.log(this.response = data);
+                    this.holidayService.holidays = data.data['data'];
+                    console.log('data.data');
+                    console.log(this.holidayService.holidays);
                 },
                 (err) => {
                     console.log(err.error);
-                    this.alertService.error(err.error.message);
-                    // this.serverService.handleError(err);
+                    // this.alert.error(err.error.message);
 
                 },
                 () => {
-                    this.data = this.serverService.response.data;
+                    this.data = this.response.data;
                     this.loadingHolidayStatus = false;
 
                 });
@@ -59,16 +68,18 @@ export class UserStatusComponent implements OnInit {
     }
 
     getServerHolidayBalanceResponse() {
-        this.serverService.getServerResponse(ApiUrl.HOLIDAY_BALANCE_URL)
+        this.userService.getUserHolidayBalance()
             .subscribe((data: ServerData) => {
+                    console.log('balance succeeddddddddd');
                     console.log(data);
-                    this.casual = data.data['casual'];
-                    this.planned = data.data['planned'];
+                    this.casual = data.data[HolidayConstant.CASUAL];
+                    this.planned = data.data[HolidayConstant.PLANNED];
+
+
                 },
                 (err) => {
-                    console.log(err.err);
-                    this.alertService.error(err.error);
-                    // this.serverService.handleError(err);
+                    console.error(err.error);
+                    // this.alert.error(err.error.message);
                 },
                 () => {
                     this.loadingHolidayBalance = false;
@@ -77,28 +88,22 @@ export class UserStatusComponent implements OnInit {
 
     }
 
-    onUpdate(index, holidayId, type, to, from, amount) {
-        // console.log('updateeee');
-        // this.holidayService.holiday = new Holiday();
-        // this.currentHoliday.id = holidayId;
-        // this.currentHoliday.type = type;
-        // this.currentHoliday.to = to;
-        // this.currentHoliday.from = from;
-        // this.currentHoliday.amount = amount;
+    onUpdate(index) {
+
         this.router.navigate(['app-edit-holiday', index]);
 
 
     }
 
     onDelete(index, holidayId) {
-        this.serverService.deleteServerRequest('/api/v1/holidays/' + holidayId + '/actions/delete')
+        this.holidayService.deleteHoliday(holidayId)
             .subscribe((data: ServerData) => {
                     console.log(data);
                     this.data['data'].splice(index, 1);
                 },
                 (err) => {
-                    console.log(err.err);
-                    this.alertService.error(err.error.message);
+                    console.log(err.error);
+                    // this.alert.error(err.error.message);
                 }
             );
     }

@@ -1,13 +1,14 @@
 import {Component, OnInit} from '@angular/core';
 import {NgForm} from '@angular/forms';
-import {ServerService} from '../../_services/server.service';
 import {first} from 'rxjs/operators';
 import {ServerData} from '../../_models/server-data';
 import {Holiday} from '../../_models/holiday';
 import {Route, Router} from '@angular/router';
-import {AlertService} from '../../_services/alert.service';
+import {Alert} from '../../_helpers/alert';
+import {HolidayService} from '../../_services/holiday.service';
+import {HolidayConstant} from '../../constants/holiday-constant';
+import {ErrorCode} from '../../constants/error-code';
 
-const CREATE_HOLIDAY_URL = '/api/v1/holidays/actions/create';
 
 @Component({
     selector: 'app-holiday-request',
@@ -18,10 +19,16 @@ export class HolidayRequestComponent implements OnInit {
     private holiday: Holiday;
     private response: ServerData;
     private formErrors = {};
-    private holidays = ['planned', 'casual'];
+    private holidays = [HolidayConstant.PLANNED, HolidayConstant.CASUAL];
+    private holidayMap = new Map();
 
-    constructor(private serverService: ServerService, private router: Router, private alertService: AlertService) {
+
+    constructor(private router: Router,
+                private alertService: Alert, private holidayService: HolidayService) {
         this.holiday = new Holiday();
+        this.holidayMap = new Map();
+        this.holidayMap.set(HolidayConstant.PLANNED, 'planned');
+        this.holidayMap.set(HolidayConstant.CASUAL, 'casual');
     }
 
     ngOnInit() {
@@ -41,7 +48,8 @@ export class HolidayRequestComponent implements OnInit {
     }
 
     getServerCreateHolidayResponse() {
-        this.serverService.postServerRequest(this.holiday, CREATE_HOLIDAY_URL).pipe(first())
+        // this.serverService.postServerRequest(this.holiday, CREATE_HOLIDAY_URL).pipe(first())
+        this.holidayService.creatHoliday(this.holiday).pipe(first())
             .subscribe((data: ServerData) => {
                     console.log((this.response = data));
                     this.router.navigate(['user-home']);
@@ -61,7 +69,7 @@ export class HolidayRequestComponent implements OnInit {
                         }
                         console.log('validation form errors');
                         console.log(this.formErrors);
-                    } else {/*another error*/
+                    } else if (error.error.code === ErrorCode.HOLIDAY_NOT_ENOUGH_LEFT) {
                         this.alertService.error(error.error.message);
                     }
                 }

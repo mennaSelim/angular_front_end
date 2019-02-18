@@ -13,7 +13,7 @@
           <label for="holidayType">holiday type</label>
           <!-- <input id="holidayType" name="holidayType" type="text" class="form-control" ngModel #holidayType="ngModel" required [ngClass]="{ 'is-invalid': formErrors.type }"> -->
           <select class="form-control" id="holidayType" name="holidayType" ngModel #holidayType="ngModel" required [ngClass]="{ 'is-invalid': formErrors.type }">
-            <option *ngFor="let holiday of holidays" [value]="holiday">{{holiday}}</option>
+            <option *ngFor="let holiday of holidays" [value]="holiday">{{holidayMap.get(holiday)}}</option>
           </select>
           <small *ngIf="formErrors.type" class="invalid-feedback">{{formErrors.type}}</small>
         </div>

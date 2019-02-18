@@ -1,73 +1,89 @@
-import {Component, OnInit, Input} from '@angular/core';
-import {ServerService} from '../_services/server.service';
-import {FormGroup, NgForm} from '@angular/forms';
-import {ServerData} from '../_models/server-data';
-import {User} from '../_models/user';
-import {catchError, first} from 'rxjs/operators';
-import {HttpClient, HttpErrorResponse} from '@angular/common/http';
-import {pipe} from 'rxjs';
-import {Router} from '@angular/router';
+import {Component, OnInit} from '@angular/core';
+import {Router, ActivatedRoute} from '@angular/router';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {first} from 'rxjs/operators';
+import {Alert} from '../_helpers/alert';
 import {AuthenticationService} from '../_services/authentication.service';
-import {AlertService} from '../_services/alert.service';
+import {User} from '../_models/user';
+import {ErrorCode} from '../constants/error-code';
+import {ServerData} from '../_models/server-data';
 
 
-const LOGIN_URL = '/api/v1/users/actions/login';
-
-@Component({
-    selector: 'app-login',
-    templateUrl: './login.component.html',
-    styleUrls: ['./login.component.css']
-})
+@Component({templateUrl: 'login.component.html'})
 export class LoginComponent implements OnInit {
-
-
-    // private url = '/api/v1/users/actions/trial';
+    loginForm: FormGroup;
     private user: User;
-    private response: ServerData;
-    public errors = null;
+    returnUrl: string;
+    private formErrors = {};
 
-
-
-
-    // email: string;
-    // password: string;
-
-    constructor(private serverService: ServerService, private router: Router,
-                private authService: AuthenticationService, private alertService: AlertService) {
-        this.user = new User();
+    constructor(
+        private formBuilder: FormBuilder,
+        private route: ActivatedRoute,
+        private router: Router,
+        private authService: AuthenticationService,
+        private alertService: Alert) {
     }
 
     ngOnInit() {
+        this.user = new User();
+        this.loginForm = this.formBuilder.group({
+            email: [''],
+            password: ['']
+        });
+
         // reset login status
         this.authService.logout();
+
+        // get return url from route parameters or default to '/user-home'
+        this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/user-home';
+
     }
 
-    onSelect(f: NgForm): void {
-        // this.serverService.showServerResponse(this.url);
-        this.user.email = f.value['email'];
-        this.user.password = f.value['password'];
-        console.log('email:', this.user.email);
-        console.log('pass:', this.user.password);
+    get f() {
+        return this.loginForm.controls;
+    }
+
+    onSubmit() {
+        this.formErrors = {};
+        this.user.email = this.f.email.value;
+        this.user.password = this.f.password.value;
+
         this.getServerLoginResponse();
-
-
     }
 
     getServerLoginResponse() {
         this.authService.login(this.user)
             .pipe(first())
             .subscribe(
-                data => {
-                    this.router.navigate(['user-home']);
+                (data: ServerData) => {
+                    // login successful if there's a jwt token in the response
+                    if (data && data.data['access_token']) {
+                        // store user details and jwt token in local storage to keep user logged in between page refreshes
+                        localStorage.setItem('currentUser', JSON.stringify(data.data['access_token']));
+                    }
+                    console.log('return urlllllll');
+                    console.log(this.returnUrl);
+                    this.router.navigate([this.returnUrl]);
                 },
-                (error: Error) => {
+                (error) => {
                     console.log('error in login component');
-                    console.log(error);
-                    this.alertService.error(error.message);
+                    if (error.error.code === ErrorCode.VALIDATION_ERROR) {
+                        let errorData = error.error.message;
+                        for (let key in errorData) {
+                            // if key has nested "errors", get and set the error message, else set null
+                            errorData[key] ? this.formErrors[key] = errorData[key] : this.formErrors[key] = null;
+                        }
+                        console.log('validation form errors');
+                        console.log(this.formErrors);
+                    } else { /*invalid name or password*/
+                        console.log('error msg');
+                        console.log(error.error.message);
+                        this.alertService.error(error.error.message);
+                    }
+
                 });
 
 
     }
-
 
 }

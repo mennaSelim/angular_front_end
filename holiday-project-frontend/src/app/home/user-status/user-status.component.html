@@ -1,7 +1,7 @@
 <app-logout ></app-logout>
 
 <br>
-<div class="container" *ngIf = "!loadingStatus && !loadingBalance">
+<div class="container" *ngIf = "!loadingHolidayStatus && !loadingHolidayBalance">
 
 <!-- <div class="row">
   <div class="col-sm-3"> -->
@@ -43,13 +43,13 @@
             <tbody *ngIf="data">
                 <tr *ngFor="let data of data['data']; index as i">
                     <th scope="row">{{ i + 1 }}</th>
-                    <td>{{data.type}}</td>
+                    <td>{{holidayTypeMap.get(data.type)}}</td>
                     <td>{{data.amount}}</td>
-                    <td>{{data.status}}</td>
+                    <td>{{holidayStatusMap.get(data.status)}}</td>
                     <td>{{data.from}}</td>
                     <td>{{data.to}}</td>
-                    <td> <button name={{data.id}} type="button" class="btn btn-link" (click)="onUpdate(i,data.id)">edit</button></td>
-                    <td> <button name={{data.id}} type="button" class="btn btn-link" (click)="onDelete(i,data.id)" >delete</button></td>
+                    <td> <button *ngIf="data.status == pendingStatus" name={{data.id}} type="button" class="btn btn-link" (click)="onUpdate(i,data.id)">edit</button></td>
+                    <td> <button *ngIf="data.status == pendingStatus" name={{data.id}} type="button" class="btn btn-link" (click)="onDelete(i,data.id)" >delete</button></td>
                 </tr>
             </tbody>
         </table>

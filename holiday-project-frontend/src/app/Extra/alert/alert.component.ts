@@ -1,6 +1,6 @@
 import {Component, OnInit, OnDestroy} from '@angular/core';
 import {Subscription} from 'rxjs';
-import {AlertService} from '../../_services/alert.service';
+import {Alert} from '../../_helpers/alert';
 
 
 @Component({
@@ -12,7 +12,7 @@ export class AlertComponent implements OnInit, OnDestroy {
     private subscription: Subscription;
     message: any;
 
-    constructor(private alertService: AlertService) {
+    constructor(private alertService: Alert) {
     }
 
     ngOnInit() {

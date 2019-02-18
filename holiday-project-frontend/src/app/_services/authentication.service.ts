@@ -14,46 +14,33 @@ export class AuthenticationService {
     }
 
     login(user: User) {
-        return this.http.post<ServerData>(`${ApiUrl.SERVER_URL}` + `${ApiUrl.LOGIN_URL}`, user)
-            .pipe(map((data: ServerData) => {
-                // login successful if there's a jwt token in the response
-                if (data && data.data['access_token']) {
-                    // store user details and jwt token in local storage to keep user logged in between page refreshes
-                    localStorage.setItem('currentUser', JSON.stringify(data.data['access_token']));
-                }
+        return this.http.post<ServerData>(`${ApiUrl.SERVER_URL}` + `${ApiUrl.LOGIN_URL}`, user);
 
-                // return user;
-            }));
     }
 
     logout() {
-        // remove user from local storage to log user out
-        localStorage.removeItem('currentUser');
-        console.log('logged out');
+        return this.http.post(ApiUrl.SERVER_URL + ApiUrl.LOGOUT_URL, {});
     }
 
     refreshToken() {
-        return this.http.get(ApiUrl.SERVER_URL + ApiUrl.REFRESH_TOKEN_URL)
-            .pipe(first()).subscribe(
-                (data: ServerData) => {
-                    console.log('in auth refresh');
-                    console.log(data);
-                    if (data && data.data['access_token']) {
-                        // store user details and jwt token in local storage to keep user logged in between page refreshes
-                        localStorage.setItem('currentUser', JSON.stringify(data.data['access_token']));
-                    }
-                }
-            );
-        // .pipe(map((data: ServerData) => {
-        //     console.log('in auth refresh');
-        //     console.log(data);
-        //     // login successful if there's a jwt token in the response
-        //     if (data && data.data['access_token']) {
-        //         // store user details and jwt token in local storage to keep user logged in between page refreshes
-        //         localStorage.setItem('currentUser', JSON.stringify(data.data['access_token']));
-        //         console.log('refresheddddddddddddd token');
-        //         console.log(data.data['access_token']);
-        //     }
-        // }));
+        console.log('b4 refreshhh');
+        console.log(JSON.parse(localStorage.getItem('currentUser')));
+        return this.http.get(ApiUrl.SERVER_URL + ApiUrl.REFRESH_TOKEN_URL);
+            // .pipe(first()).subscribe(
+            //     (data: ServerData) => {
+            //         console.log('in auth refresh');
+            //         console.log(data);
+            //         if (data && data.data['access_token']) {
+            //             // store user details and jwt token in local storage to keep user logged in between page refreshes
+            //             localStorage.setItem('currentUser', JSON.stringify(data.data['access_token']));
+            //             console.log('after refresh');
+            //             console.log(JSON.parse(localStorage.getItem('currentUser')));
+            //         }
+            //     },
+            //     (error) => {
+            //         console.log('error in refresh token');
+            //     }
+            // );
+
     }
 }

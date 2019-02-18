@@ -1,3 +1,3 @@
 export class ApproveHoliday {
-    status: string;
+    status: number;
 }
